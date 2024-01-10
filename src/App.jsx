@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import show_alert from "../functions";
+import show_alert from "./functions";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
