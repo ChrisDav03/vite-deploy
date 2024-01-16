@@ -183,7 +183,7 @@ export default function App() {
                             </div>
                             <div className="input-group mb-3">
                                 <span className="input-group-text"><i className="fa-solid fa-gift"></i></span>
-                                <input type="number" placeholder="YYYY" min="0" max="2050" id="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
+                                <input type="number" placeholder="YYYY" min="0" max="2050" id="date" className="form-control" value={(date).substring(0, 4)} onChange={(e) => setDate(e.target.value)} />
                             </div>
                             <div className="d-grid col-6 mx-auto">
                                 <button onClick={() => validate()} className="btn btn-success">
