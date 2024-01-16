@@ -16,14 +16,17 @@ export default function App() {
     const [operation, setOperation] = useState(1);
     const [func, setFunct] = useState('')
 
-    useEffect(() => {
-        getBooks();
-    }, []);
+    
 
     const getBooks = async () => {
         const answer = await axios.get(url);
         setBooks(answer.data.books)
     }
+
+    useEffect(() => {
+        getBooks();
+    }, [getBooks]);
+
     const openModal = (op, id, title, author, genre, date) => {
         setId('');
         setTitle('');
@@ -49,6 +52,7 @@ export default function App() {
     const validate = () => {
         var parameter;
         var method;
+        console.log(date.length)
         if (title.trim() === '') {
             show_alert('Escribe el titulo del libro', 'warning')
         } else if (author.trim() === '') {
@@ -57,12 +61,13 @@ export default function App() {
         } else if (genre.trim() === '') {
             show_alert('Escribe el genero del libro', 'warning')
 
-        } else if (date.trim() === '') {
-            show_alert('Escribe la fecha de publicacion del libro', 'warning')
+        } else if (date.length != 4) {
+            show_alert('Escribe un año valido para el libro', 'warning')
 
         } else {
             if (operation === 1) {
                 parameter = { id: id, title: title.trim(), author: author.trim(), genre: genre.trim(), date: date.trim() }
+                console.log(date.length)
                 console.log(parameter)
                 method = 'POST'
             } else {
@@ -75,8 +80,9 @@ export default function App() {
     }
     const sendApplication = async (method, parameter) => {
         await axios({ method: method, url: url, data: parameter }).then((answer) => {
-            var type = answer.data[0];
-            var msj = answer.data[1];
+            
+            var type = answer.data.message ? "success" : "error";
+            var msj = answer.data.message;
             show_alert(msj, type);
             if (type === 'success') {
                 document.getElementById('btnClose').click();
@@ -98,6 +104,7 @@ export default function App() {
             if (result.isConfirmed) {
                 setId(id);
                 sendApplication('DELETE', { id: id })
+                
             } else {
                 show_alert('El libro no fue eliminado', 'info')
             }
@@ -158,25 +165,25 @@ export default function App() {
                     <div className="modal-content">
                         <div className="modal-header">
                             <label className="h5">{func}</label>
-                            <button type="button" className="btn-close" data-bs-dismiss='modal' aria-label="Close"></button>
+                            <button type="button" id="btnClose" className="btn-close" data-bs-dismiss='modal' aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
                             <input type="hidden" id="id"></input>
                             <div className="input-group mb-3">
                                 <span className="input-group-text"><i className="fa-solid fa-gift"></i></span>
-                                <input type="text" id="title" className="form-control" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                <input type="text" id="title" className="form-control" placeholder="Titulo" value={title} onChange={(e) => setTitle(e.target.value)} />
                             </div>
                             <div className="input-group mb-3">
                                 <span className="input-group-text"><i className="fa-solid fa-gift"></i></span>
-                                <input type="text" id="title" className="form-control" placeholder="Author" value={author} onChange={(e) => setAuthor(e.target.value)} />
+                                <input type="text" id="author" className="form-control" placeholder="Autor" value={author} onChange={(e) => setAuthor(e.target.value)} />
                             </div>
                             <div className="input-group mb-3">
                                 <span className="input-group-text"><i className="fa-solid fa-gift"></i></span>
-                                <input type="text" id="title" className="form-control" placeholder="Genre" value={genre} onChange={(e) => setGenre(e.target.value)} />
+                                <input type="text" id="genre" className="form-control" placeholder="Genero" value={genre} onChange={(e) => setGenre(e.target.value)} />
                             </div>
                             <div className="input-group mb-3">
                                 <span className="input-group-text"><i className="fa-solid fa-gift"></i></span>
-                                <input type="number" placeholder="YYYY" min="0" max="2050" id="title" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
+                                <input type="number" placeholder="YYYY" min="0" max="2050" id="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} />
                             </div>
                             <div className="d-grid col-6 mx-auto">
                                 <button onClick={() => validate()} className="btn btn-success">
