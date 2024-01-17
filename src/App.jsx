@@ -16,7 +16,7 @@ export default function App() {
     const [operation, setOperation] = useState(1);
     const [func, setFunct] = useState('')
 
-    
+
 
     const getBooks = async () => {
         const answer = await axios.get(url);
@@ -25,7 +25,7 @@ export default function App() {
 
     useEffect(() => {
         getBooks();
-    }, [getBooks]);
+    }, []);
 
     const openModal = (op, id, title, author, genre, date) => {
         setId('');
@@ -80,7 +80,7 @@ export default function App() {
     }
     const sendApplication = async (method, parameter) => {
         await axios({ method: method, url: url, data: parameter }).then((answer) => {
-            
+
             var type = answer.data.message ? "success" : "error";
             var msj = answer.data.message;
             show_alert(msj, type);
@@ -104,18 +104,64 @@ export default function App() {
             if (result.isConfirmed) {
                 setId(id);
                 sendApplication('DELETE', { id: id })
-                
+
             } else {
                 show_alert('El libro no fue eliminado', 'info')
             }
         })
 
     }
+    const filterBook = async (date, genre) => {
+        const parameters = { date: date.trim(), genre: genre.trim() };
+        console.log(parameters)
+    
+        try {
+            const answer = await axios({ method: "POST", url: url + 'filter', data: parameters });
+            if (answer.data.books) {
+                setBooks(answer.data.books);
+                
+            } else{
+                show_alert('No hay libros con ese filtro', 'info')
+            }
+            
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    
+    
     return (
         <div className="App">
-            
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-...." crossOrigin="anonymous" />
-            
+            <div>
+                <header className='p-4 d-flex justify-content-between'>
+                    <a href="" className="d-flex align-items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                        </svg>
+                        <span className='font-weight-bold fs-4'>Libreria Junior</span>
+                    </a>
+                    <div className='d-flex border border-secondary rounded-full py-2 px-4 shadow-md shadow-gray-300'>
+                        <input type="number" placeholder="YYYY" min="0" max="2050" id="date" className="form-control" onChange={(e) => setDate(e.target.value)}/>
+                        <select name="genres" id="genres" onChange={(e) => setGenre(e.target.value)}>
+                                <option disabled selected value> Selecciona </option>
+                                <option value="Fantasia">Fantasia</option>
+                                <option value="Ciencia Ficcion">Ciencia Ficcion</option>
+                                <option value="Aventura">Aventura</option>
+                        </select>
+                        <button onClick={() => filterBook(date, genre)} className='btn btn-primary p-1 rounded-full'>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div className='d-flex border border-secondary rounded-full py-2 px-4'>
+                        <div>Iniciar Sesión</div>
+                    </div>
+                </header>
+            </div>
+
+
             <div className="container-fluid">
                 <div className="row mt-3 ">
                     <div className="col-md-4 offset-md-4">
@@ -179,7 +225,11 @@ export default function App() {
                             </div>
                             <div className="input-group mb-3">
                                 <span className="input-group-text"><i className="fa-solid fa-gift"></i></span>
-                                <input type="text" id="genre" className="form-control" placeholder="Genero" value={genre} onChange={(e) => setGenre(e.target.value)} />
+                                <select id="genre" className="form-control" placeholder="Genero" value={genre} onChange={(e) => setGenre(e.target.value)} >
+                                    <option value="Fantasia">Fantasia</option>
+                                    <option value="Ciencia Ficcion">Ciencia Ficcion</option>
+                                    <option value="Aventura">Aventura</option>
+                                </select>
                             </div>
                             <div className="input-group mb-3">
                                 <span className="input-group-text"><i className="fa-solid fa-gift"></i></span>
